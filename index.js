@@ -26,7 +26,7 @@ function handleInputCount(event) {
 function handleItemCount(event) {
     const listCount = todoList.childElementCount;
 
-    if (listCount >= 1) {
+    if (listCount >= 0) {
        itemCount.innerText = 'Total items = ' + listCount;
     }
 }
