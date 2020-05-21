@@ -15,7 +15,7 @@ todoInput.addEventListener('keydown', handleInputCount);
 function handleInputCount(event) {
     const count = event.target.value.length;
 
-    if(count === 0) {
+    if (count === 0) {
         inputCount.innerText = '';
         return;
     }
@@ -27,7 +27,7 @@ function handleItemCount(event) {
     const listCount = todoList.childElementCount;
 
     if (listCount >= 0) {
-       itemCount.innerText = 'Total items = ' + listCount;
+        itemCount.innerText = 'Total items = ' + listCount;
     }
 }
 
@@ -39,16 +39,44 @@ function handleItemTotalCount(event) {
 // ??? cum de facut in procente??? completed/total
 
 function handleItemClick(event) {
-    if(event.target.dataset.action === 'remove') {
+    let tempStorage = JSON.parse(localStorage.getItem('todos'));
+    const itemId = parseInt(event.target.closest('li').dataset.todoid);
+    let newStorageArray = [];
+    if (event.target.dataset.action === 'remove') {
+        for (let i = 0; i < tempStorage.length; i++) {
+            if (tempStorage[i].id !== itemId) {
+                newStorageArray.push(tempStorage[i])
+            }
+        }
         event.target.closest('li').remove();
+        localStorage.setItem('todos', JSON.stringify(newStorageArray));
     }
-    if(event.target.dataset.action === 'status') {
+    if (event.target.dataset.action === 'status') {
         event.target.closest('li').classList.toggle('complete');
-     }
+        for (let i = 0; i < tempStorage.length; i++) {
+            if (tempStorage[i].id === itemId) {
+                tempStorage[i].status = !tempStorage[i].status;
+            }
+            newStorageArray.push(tempStorage[i])
+        }
+        localStorage.setItem('todos', JSON.stringify(newStorageArray));
+    }
 }
 
-function addItemToList() {
-    if(!todoInput.value) return;
+let tempStorage = JSON.parse(localStorage.getItem('todos'));
+
+if (tempStorage && tempStorage.length > 0) {
+    for (let i = 0; i < tempStorage.length; i++) {
+        const text = tempStorage[i].text;
+        const status = tempStorage[i].status;
+        const id = parseInt(tempStorage[i].id);
+
+        addItemToList(text, status, id)
+    }
+}
+
+function addItemToList(text, status, id) {
+    if (!todoInput.value && !text) return;
 
     const listItem = document.createElement('li');
     const listItemRemoveBtn = document.createElement('button');
@@ -56,23 +84,41 @@ function addItemToList() {
     const listTextSpan = document.createElement('span');
 
     listItem.classList.add('todolist__item');
-    //listItem.classList.add('complete');
 
     listItemRemoveBtn.innerText = 'x';
     listItemRemoveBtn.setAttribute('data-action', 'remove');
-    listTextSpan.innerText = todoInput.value;
+    if (todoInput.value && text) {
+        listTextSpan.innerText = todoInput.value;
+    } else {
+        listTextSpan.innerText = text;
+    }
     listCheckboxStatus.type = 'checkbox';
+    listCheckboxStatus.checked = !!status;
+    if (!!status) {
+        listItem.classList.add('complete');
+    }
     listCheckboxStatus.setAttribute('data-action', 'status');
 
     listItem.append(listCheckboxStatus)
     listItem.append(listTextSpan)
     listItem.append(listItemRemoveBtn)
 
+    let tempStorage = JSON.parse(localStorage.getItem('todos'));
+    tempStorage === null ? tempStorage = [] : tempStorage;
+    let itemId = id;
+
+    if (todoInput.value) {
+        tempStorage.push({
+            id: tempStorage.length,
+            text: listTextSpan.innerText,
+            status: false
+        })
+        localStorage.setItem('todos', JSON.stringify(tempStorage));
+        itemId = tempStorage.length
+    }
+
+    listItem.setAttribute('data-todoid', itemId);
     todoInput.value = '';
     inputCount.innerText = '';
     todoList.append(listItem);
 }
-
-/*const todos = document.getElementById('todo-input');
-const value = listItem.value;
-localStorage.setItem ('todos', JSON.stringify(value));*/
