@@ -23,6 +23,7 @@ $color-item: #eaeaea;
 
     h1 {
         padding: 1rem;
+        margin-top: 0;
         color: $color-h1;
     }
 
@@ -146,5 +147,5 @@ $color-item: #eaeaea;
 
 .complete.todolist__item span {
     text-decoration: line-through;
-    color: green;
+    color: #ccc;
 }
