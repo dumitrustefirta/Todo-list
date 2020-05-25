@@ -4,8 +4,13 @@ const todoList = document.getElementById('todolist');
 const inputCount = document.getElementById('input-count');
 const itemCount = document.getElementById('total');
 const totalDoneCount = document.getElementById('total-done');
+const dateElement = document.getElementById('date');
 
-addButton.addEventListener('click', addItemToList);
+let tempStorage = getTodosFromLocalStorage();
+tempStorage === null ? tempStorage = [] : tempStorage;
+setTodosToLocalStorage(tempStorage);
+
+addButton.addEventListener('click', handleAddTodoItem);
 addButton.addEventListener('click', handleItemCount);
 todoList.addEventListener('click', handleItemClick);
 todoList.addEventListener('click', handleItemCount);
@@ -38,87 +43,88 @@ function handleItemTotalCount(event) {
 }
 // ??? cum de facut in procente??? completed/total
 
+// Show todays date
+const options = {weekday : "long", month:"short", day:"numeric"};
+const today = new Date();
+
+dateElement.innerHTML = today.toLocaleDateString("en-US", options);
+
+
 function handleItemClick(event) {
     let tempStorage = JSON.parse(localStorage.getItem('todos'));
     const itemId = parseInt(event.target.closest('li').dataset.todoid);
     let newStorageArray = [];
     if (event.target.dataset.action === 'remove') {
+        let newStorageArray = [];
         for (let i = 0; i < tempStorage.length; i++) {
-            if (tempStorage[i].id !== itemId) {
-                newStorageArray.push(tempStorage[i])
+            if (itemId !==  tempStorage[i].id) {
+                newStorageArray.push(tempStorage[i]);
             }
         }
+        setTodosToLocalStorage(newStorageArray);
         event.target.closest('li').remove();
-        localStorage.setItem('todos', JSON.stringify(newStorageArray));
     }
     if (event.target.dataset.action === 'status') {
-        event.target.closest('li').classList.toggle('complete');
+        let newStorageArray = [];
         for (let i = 0; i < tempStorage.length; i++) {
-            if (tempStorage[i].id === itemId) {
+            if (itemId  === tempStorage[i].id) {
                 tempStorage[i].status = !tempStorage[i].status;
             }
-            newStorageArray.push(tempStorage[i])
+            newStorageArray.push(tempStorage[i]);
         }
-        localStorage.setItem('todos', JSON.stringify(newStorageArray));
+        setTodosToLocalStorage(newStorageArray);
+        event.target.closest('li').classList.toggle('complete');
     }
 }
 
-let tempStorage = JSON.parse(localStorage.getItem('todos'));
-
-if (tempStorage && tempStorage.length > 0) {
-    for (let i = 0; i < tempStorage.length; i++) {
-        const text = tempStorage[i].text;
-        const status = tempStorage[i].status;
-        const id = parseInt(tempStorage[i].id);
-
-        addItemToList(text, status, id)
-    }
+for (let i = 0; i < tempStorage.length; i++) {
+    renderTodoItem(tempStorage[i].text, tempStorage[i].status, tempStorage[i].id);
 }
 
-function addItemToList(text, status, id) {
-    if (!todoInput.value && !text) return;
+function handleAddTodoItem() {
+    let tempStorage = getTodosFromLocalStorage();
+    let id = tempStorage.length;
 
+    tempStorage.push({
+        id: id,
+        text: todoInput.value,
+        status: false,
+    })
+    setTodosToLocalStorage(tempStorage);
+    renderTodoItem(todoInput.value, false, id);
+    todoInput.value = '';
+    inputCount.innerText = '';
+}
+
+function renderTodoItem(text, status, id) {
     const listItem = document.createElement('li');
     const listItemRemoveBtn = document.createElement('button');
     const listCheckboxStatus = document.createElement('input');
     const listTextSpan = document.createElement('span');
-
     listItem.classList.add('todolist__item');
-
     listItemRemoveBtn.innerText = 'x';
     listItemRemoveBtn.setAttribute('data-action', 'remove');
-    if (todoInput.value && text) {
-        listTextSpan.innerText = todoInput.value;
-    } else {
-        listTextSpan.innerText = text;
-    }
+    listTextSpan.innerText = text;
     listCheckboxStatus.type = 'checkbox';
-    listCheckboxStatus.checked = !!status;
-    if (!!status) {
+    listCheckboxStatus.checked = status;
+    if (status) {
         listItem.classList.add('complete');
     }
-    listCheckboxStatus.setAttribute('data-action', 'status');
+    listCheckboxStatus.setAttribute('data-action', 'status')
 
     listItem.append(listCheckboxStatus)
     listItem.append(listTextSpan)
     listItem.append(listItemRemoveBtn)
-
-    let tempStorage = JSON.parse(localStorage.getItem('todos'));
-    tempStorage === null ? tempStorage = [] : tempStorage;
-    let itemId = id;
-
-    if (todoInput.value) {
-        tempStorage.push({
-            id: tempStorage.length,
-            text: listTextSpan.innerText,
-            status: false
-        })
-        localStorage.setItem('todos', JSON.stringify(tempStorage));
-        itemId = tempStorage.length
-    }
-
-    listItem.setAttribute('data-todoid', itemId);
-    todoInput.value = '';
-    inputCount.innerText = '';
+    listItem.setAttribute('data-todoid', id);
     todoList.append(listItem);
+}
+
+
+// Helper functions 
+
+function getTodosFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('todos'))
+}
+function setTodosToLocalStorage(todos) {
+    localStorage.setItem('todos', JSON.stringify(todos))
 }

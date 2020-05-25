@@ -5,16 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODO List</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web">
+    <link rel="stylesheet" href="/css/font-awesome.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Our awesome TODO</h1>
+        <div class="list-header">
+            <h1>To Do List</h1>
+            <span id="date"></span>        
+        </div>
         <div class="todo-component">
             <div class="todo-component__control">
                 <div class="todo-component__input-group">
-                    <input type="text" id="todo-input" placeholder="Add todo">
+                    <input type="text" id="todo-input" placeholder="  Add to-do">
                     <span id="input-count"></span>
                     <span id="total"></span>
                     <span id="total-done"></span>
