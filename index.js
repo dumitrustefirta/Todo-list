@@ -3,7 +3,6 @@ const addButton = document.getElementById('todo-add');
 const todoList = document.getElementById('todolist');
 const inputCount = document.getElementById('input-count');
 const itemCount = document.getElementById('total');
-const totalDoneCount = document.getElementById('total-done');
 const dateElement = document.getElementById('date');
 
 let tempStorage = getTodosFromLocalStorage();
@@ -15,9 +14,9 @@ addButton.addEventListener('click', handleItemCount);
 todoList.addEventListener('click', handleItemClick);
 todoList.addEventListener('click', handleItemCount);
 todoList.addEventListener('change', handleItemTotalCount);
-todoInput.addEventListener('keydown', handleInputCount);
+//todoInput.addEventListener('keydown', handleInputCount);
 
-function handleInputCount(event) {
+/* function handleInputCount(event) {
     const count = event.target.value.length;
 
     if (count === 0) {
@@ -26,19 +25,26 @@ function handleInputCount(event) {
     }
 
     inputCount.innerText = 'Characters count: ' + count;
-}
+} */
 
 function handleItemCount(event) {
     const listCount = todoList.childElementCount;
 
-    if (listCount >= 0) {
-        itemCount.innerText = 'Total items = ' + listCount;
+    if (listCount === 0) {
+        itemCount.innerText = '';
+        return;
     }
+    itemCount.innerText = 'Total items = ' + listCount;
 }
 
 function handleItemTotalCount(event) {
+    const totalDoneCount = document.getElementById('total-done');
     const checkedItems = this.querySelectorAll('input[type="checkbox"]:checked').length;
 
+    if(checkedItems === 0) {
+        totalDoneCount.innerText = '';
+        return;
+    }
     totalDoneCount.innerText = 'Completed: ' + checkedItems;
 }
 // ??? cum de facut in procente??? completed/total
@@ -118,7 +124,6 @@ function renderTodoItem(text, status, id) {
     listItem.setAttribute('data-todoid', id);
     todoList.append(listItem);
 }
-
 
 // Helper functions 
 

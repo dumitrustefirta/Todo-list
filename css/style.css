@@ -2,7 +2,10 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Titillium Web', sans-serif; }
+  font-family: 'Titillium Web', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  min-height: -webkit-fill-available; }
 
 .container {
   margin: 0 auto;
